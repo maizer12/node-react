@@ -3,9 +3,13 @@ import userService from '../service/user-service.js';
 class UserController {
 	async registration(req, res, next) {
 		try {
-			userService(req.body.email, req.body.password, next);
-			res.send('123');
-		} catch (e) {}
+			const { email, password } = req.body;
+			const userData = await userService.registration(email, password);
+			res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+			return res.json(userData);
+		} catch (err) {
+			return res.status(404).json({ message: err });
+		}
 	}
 	async login(req, res, next) {
 		try {
