@@ -1,37 +1,22 @@
-import express from 'express'
-import mongoose from 'mongoose'
-import {
-	registerValidation,
-	loginValidation,
-	itemValidation,
-} from './validation/auth.js'
-import { login, register, getMe } from './controller/UserController.js'
-import handleValidationErrors from './validation/handleValidationErrors.js'
-import checkAuth from './utils/checkAuth.js'
-import { create, getAll, getOne, update } from './controller/PostController.js'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import router from './router/index.js';
+
 mongoose
-	.connect(
-		'mongodb+srv://admin:2SqItb0uN5y03UR9@cluster0.lzgzyfs.mongodb.net/blog?retryWrites=true&w=majority'
-	)
-	.then(() => console.log('DB ok'))
-	.catch(err => console.log('DB error', err))
-const app = express()
+	.connect(process.env.MONGO_KEY)
+	.then(() => console.log('Connected!'))
+	.catch(err => console.log(err));
 
-app.use(express.json())
-app.use(cors())
-app.post('/login', loginValidation, handleValidationErrors, login)
-app.post('/register', registerValidation, handleValidationErrors, register)
-app.get('/me', checkAuth, getMe)
+const app = express();
 
-app.post('/post', itemValidation, handleValidationErrors, create)
-app.get('/post', getAll)
-app.get('/post/:id', getOne)
-app.patch('/post/:id', update)
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors());
+app.use('/api', router);
 
-app.listen(4000, err => {
-	if (err) {
-		return console.log(err)
-	}
-	console.log('Сервер запущен!')
-})
+app.listen(process.env.PORT, () => {
+	console.log('Server start:' + process.env.PORT);
+});
