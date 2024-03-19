@@ -17,6 +17,7 @@ class MailService {
 	}
 	async sendActivationMail(to, link) {
 		try {
+			console.log(link);
 			await this.transporter.sendMail({
 				from: process.env.SMTP_USER,
 				to,
@@ -24,7 +25,7 @@ class MailService {
 				text: '',
 				html: `
 				<div>
-					<a href="test">activation</a>
+					<a href="${link}">activation</a>
 				</div>
 			`,
 			});
